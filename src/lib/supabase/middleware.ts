@@ -35,14 +35,12 @@ export async function updateSession(request: NextRequest) {
         data: { user },
     } = await supabase.auth.getUser()
 
-    // Protect dashboard routes - Temporarily disabled for UI testing
-    /*
+    // Protect dashboard routes
     if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
         const url = request.nextUrl.clone()
         url.pathname = '/' // Redirect to home (or a login page) if trying to access dashboard
         return NextResponse.redirect(url)
     }
-    */
 
     // Handle successful login redirect logic (optional)
     // if (user && request.nextUrl.pathname === '/login') {

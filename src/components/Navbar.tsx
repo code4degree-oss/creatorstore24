@@ -25,16 +25,12 @@ export function Navbar() {
     }, [])
 
     const handleLogin = async () => {
-        // Temporarily bypassed for UI testing
-        window.location.href = '/onboarding/login'
-        /*
         await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
                 redirectTo: `${window.location.origin}/auth/callback`
             }
         })
-        */
     }
 
     const handleLogout = async () => {

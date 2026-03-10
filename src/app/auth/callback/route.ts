@@ -13,6 +13,11 @@ export async function GET(request: Request) {
             const { data: { user } } = await supabase.auth.getUser()
             
             if (user) {
+                // If it's the admin email, immediately redirect to the master console
+                if (user.email === process.env.ADMIN_EMAIL) {
+                    return NextResponse.redirect(`${requestUrl.origin}/master-console`)
+                }
+
                 // Check if user already exists in creators table with mandatory details
                 const { data: creator } = await supabase
                     .from('creators')

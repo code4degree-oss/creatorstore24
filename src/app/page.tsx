@@ -1,5 +1,6 @@
 import { Store, CreditCard, Box, Zap, Search } from 'lucide-react'
 import Link from 'next/link'
+import { StartSellingButton } from '@/components/StartSellingButton'
 
 export default function Home() {
   return (
@@ -43,9 +44,7 @@ export default function Home() {
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link href="/onboarding/login" className="w-full sm:w-auto px-8 py-4 bg-gray-900 text-white rounded-full font-bold text-lg hover:bg-gray-800 transition-all hover:shadow-xl hover:-translate-y-1 inline-block">
-              Start Selling for Free
-            </Link>
+            <StartSellingButton />
             <Link href="/explore" className="w-full sm:w-auto px-8 py-4 bg-white text-gray-900 border-2 border-gray-200 rounded-full font-bold text-lg hover:border-gray-900 transition-all">
               Explore Stores
             </Link>

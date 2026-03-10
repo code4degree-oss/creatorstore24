@@ -121,7 +121,7 @@ export default function NewProductPage() {
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
                                 <input
                                     type="text" required
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-600 outline-none"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-600 outline-none text-gray-900"
                                     placeholder="e.g. Master React in 30 Days"
                                     value={formData.name}
                                     onChange={e => setFormData({...formData, name: e.target.value})}
@@ -132,7 +132,7 @@ export default function NewProductPage() {
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                                 <textarea
                                     required rows={4}
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-600 outline-none resize-none"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-600 outline-none resize-none text-gray-900"
                                     placeholder="Describe your product in detail..."
                                     value={formData.description}
                                     onChange={e => setFormData({...formData, description: e.target.value})}
@@ -143,7 +143,7 @@ export default function NewProductPage() {
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
                                 <input
                                     type="number" required min="0" step="1"
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-600 outline-none"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-600 outline-none text-gray-900"
                                     placeholder="999"
                                     value={formData.price}
                                     onChange={e => setFormData({...formData, price: e.target.value})}
@@ -153,7 +153,7 @@ export default function NewProductPage() {
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Product Type</label>
                                 <select
-                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-600 outline-none bg-white"
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-600 outline-none bg-white text-gray-900"
                                     value={formData.productType}
                                     onChange={e => setFormData({...formData, productType: e.target.value as any})}
                                 >

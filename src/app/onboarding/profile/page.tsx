@@ -40,7 +40,7 @@ export default function ProfileOnboardingPage() {
                 .from('creators')
                 .upsert({
                     id: user.id,
-                    username: username,
+                    username_slug: username,
                     store_name: formData.storeName,
                     profile_image_url: user.user_metadata?.avatar_url || null,
                     // We'd ideally hash these or store them securely, MVP just saves them

@@ -7,9 +7,26 @@ export async function GET(request: Request) {
 
     if (code) {
         const supabase = await createClient()
-        await supabase.auth.exchangeCodeForSession(code)
+        const { error } = await supabase.auth.exchangeCodeForSession(code)
+        
+        if (!error) {
+            const { data: { user } } = await supabase.auth.getUser()
+            
+            if (user) {
+                // Check if user already exists in creators table with mandatory details
+                const { data: creator } = await supabase
+                    .from('creators')
+                    .select('id, store_name')
+                    .eq('id', user.id)
+                    .single()
+                    
+                if (creator && creator.store_name) {
+                    return NextResponse.redirect(`${requestUrl.origin}/dashboard`)
+                }
+            }
+        }
     }
 
-    // URL to redirect to after sign in process completes
+    // URL to redirect to if profile is incomplete or new user
     return NextResponse.redirect(`${requestUrl.origin}/onboarding/profile`)
 }

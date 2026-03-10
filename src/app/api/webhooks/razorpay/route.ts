@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { createClient } from '@/lib/supabase/server';
+import { Resend } from 'resend';
+import { ReceiptEmail } from '@/lib/emails/ReceiptEmail';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export async function POST(req: Request) {
     try {
@@ -36,10 +40,13 @@ export async function POST(req: Request) {
                 .from('orders')
                 .update({ payment_status: 'paid' })
                 .eq('id', orderId)
-                .select('*, products(product_type)')
+                .select('*, products(*)')
                 .single();
 
-            if (error) console.error("Error updating order:", error);
+            if (error || !order) {
+                console.error("Error updating order:", error);
+                return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+            }
 
             // Record payment
             await supabase.from('payments').insert({
@@ -49,8 +56,30 @@ export async function POST(req: Request) {
                 status: 'captured'
             });
 
-            // If product is digital, auto-fulfill (generate link & email)
-            // This is MVP: in production, you would trigger a serverless queue worker using Resend here.
+            // Send Receipt Email via Resend
+            try {
+                const product = order.products || {};
+                const downloadLink = product.product_type === 'digital' 
+                    ? `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/download?orderId=${order.id}`
+                    : undefined;
+
+                await resend.emails.send({
+                    from: 'Creator Store <onboarding@resend.dev>', // Use verified domain string in production
+                    to: [order.customer_email],
+                    subject: `Your receipt for ${product.name}`,
+                    react: ReceiptEmail({
+                        orderId: order.id,
+                        productName: product.name,
+                        customerName: order.customer_name,
+                        amount: order.total_amount,
+                        productType: product.product_type,
+                        downloadLink
+                    }) as React.ReactElement
+                });
+                console.log('Receipt email sent to', order.customer_email);
+            } catch (emailError) {
+                console.error('Failed to send receipt email:', emailError);
+            }
         }
 
         return NextResponse.json({ status: 'ok' });

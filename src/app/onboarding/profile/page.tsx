@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { FileText, Building, CreditCard, User, Phone, Store } from 'lucide-react'
-import Link from 'next/link'
+import { createClient } from '@/lib/supabase/client'
 
 export default function ProfileOnboardingPage() {
     const [formData, setFormData] = useState({
@@ -19,19 +19,50 @@ export default function ProfileOnboardingPage() {
     })
     const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
+    const supabase = createClient()
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value })
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsLoading(true)
-        // Simulate a submit delay
-        setTimeout(() => {
-            // Once account created, redirect to dashboard
+        
+        try {
+            const { data: { user } } = await supabase.auth.getUser()
+            if (!user) throw new Error('Not logged in')
+
+            // Generate a simple username slug from the store name
+            const username = formData.storeName.toLowerCase().replace(/[^a-z0-9]/g, '') + '-' + Math.floor(Math.random() * 1000)
+
+            const { error } = await supabase
+                .from('creators')
+                .upsert({
+                    id: user.id,
+                    username: username,
+                    store_name: formData.storeName,
+                    profile_image_url: user.user_metadata?.avatar_url || null,
+                    // We'd ideally hash these or store them securely, MVP just saves them
+                    aadhar_number: formData.aadhar,
+                    bank_name: formData.bankName,
+                    account_number: formData.accountNumber,
+                    ifsc_code: formData.ifsc,
+                    pan_number: formData.pan || null,
+                    first_name: formData.firstName,
+                    last_name: formData.lastName,
+                    contact_number: formData.contactNumber,
+                    platform_fee_percent: 5,
+                    updated_at: new Date().toISOString(),
+                })
+
+            if (error) throw error
+
             router.push('/dashboard')
-        }, 1500)
+        } catch (error: any) {
+            alert('Error saving profile: ' + error.message)
+            setIsLoading(false)
+        }
     }
 
     return (

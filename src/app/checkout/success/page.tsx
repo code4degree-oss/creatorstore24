@@ -45,10 +45,10 @@ function SuccessContent() {
                     <div className="bg-indigo-50 border border-indigo-100 p-6 rounded-2xl mb-8">
                         <h3 className="font-bold text-indigo-900 mb-2">Ready for Download</h3>
                         <p className="text-sm text-indigo-700 mb-4">We've also emailed a backup link to your inbox.</p>
-                        <button className="w-full flex items-center justify-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700 transition-colors">
+                        <a href={`/api/download?orderId=${orderId}`} target="_blank" rel="noopener noreferrer" className="w-full inline-flex items-center justify-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-indigo-700 transition-colors cursor-pointer text-center block">
                             <Download className="w-5 h-5" />
                             Download File Now
-                        </button>
+                        </a>
                     </div>
                 ) : (
                     <div className="bg-emerald-50 border border-emerald-100 p-6 rounded-2xl mb-8">

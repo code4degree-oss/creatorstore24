@@ -26,8 +26,21 @@ export default function OrdersPage() {
     }
 
     const handleUpdateDelivery = async (orderId: string, status: string) => {
-        await supabase.from('orders').update({ delivery_status: status }).eq('id', orderId)
-        loadOrders()
+        try {
+            const res = await fetch('/api/seller/update-delivery', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId, status })
+            })
+            
+            if (!res.ok) throw new Error('Failed to update status')
+            
+            // Refetch to see changes
+            loadOrders()
+            alert('Order status updated!')
+        } catch (error: any) {
+            alert(error.message)
+        }
     }
 
     if (loading) return <div>Loading...</div>

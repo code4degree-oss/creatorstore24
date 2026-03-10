@@ -19,11 +19,12 @@ export default function ExplorePage() {
             setLoading(true)
             
             // Fetch products and join with creators table to get the store URL slug (@username)
+            // Note: We filter out blacklisted creators
             let supabaseQuery = supabase
                 .from('products')
-                .select('*, creators(store_name, updated_at)')
+                .select('*, creators!inner(store_name, updated_at, is_blacklisted)')
                 .eq('is_active', true)
-                .order('created_at', { ascending: false })
+                .eq('creators.is_blacklisted', false)
                 
             if (query) {
                 // ILIKE search on product name
@@ -33,7 +34,13 @@ export default function ExplorePage() {
             const { data, error } = await supabaseQuery
             
             if (!error && data) {
-                setProducts(data)
+                // Sort mentally to put trending products first
+                const sorted = data.sort((a, b) => {
+                    if (a.is_trending && !b.is_trending) return -1;
+                    if (!a.is_trending && b.is_trending) return 1;
+                    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+                });
+                setProducts(sorted)
             }
             setLoading(false)
         }

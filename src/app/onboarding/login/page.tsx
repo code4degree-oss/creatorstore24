@@ -1,24 +1,27 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Mail, Store } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
+import { FcGoogle } from 'react-icons/fc'
 
 export default function LoginPage() {
-    const [email, setEmail] = useState('')
     const [isLoading, setIsLoading] = useState(false)
-    const router = useRouter()
+    const supabase = createClient()
 
-    const handleLogin = (e: React.FormEvent) => {
-        e.preventDefault()
+    const handleGoogleLogin = async () => {
         setIsLoading(true)
-        // Simulate a login delay
-        setTimeout(() => {
-            // In a real app, this would verify the email or send a magic link.
-            // For now, testing UI flow:
-            router.push('/onboarding/profile')
-        }, 1000)
+        try {
+            await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: `${window.location.origin}/auth/callback`
+                }
+            })
+        } catch (error) {
+            console.error('Error logging in with Google:', error)
+            setIsLoading(false)
+        }
     }
 
     return (
@@ -30,43 +33,26 @@ export default function LoginPage() {
                             <span className="text-white font-bold text-2xl leading-none">C</span>
                         </div>
                     </Link>
-                    <h2 className="text-3xl font-extrabold text-gray-900 mb-2">Become a Seller</h2>
-                    <p className="text-gray-500">Sign in with your email to start your business</p>
+                    <h2 className="text-3xl font-extrabold text-gray-900 mb-2">Welcome Back</h2>
+                    <p className="text-gray-500 mb-8">Sign in or create an account to continue</p>
                 </div>
 
-                <form className="mt-8 space-y-6" onSubmit={handleLogin}>
-                    <div>
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                            Email address
-                        </label>
-                        <div className="relative">
-                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <Mail className="h-5 w-5 text-gray-400" />
-                            </div>
-                            <input
-                                id="email"
-                                name="email"
-                                type="email"
-                                required
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-600 focus:border-transparent transition-all sm:text-sm"
-                                placeholder="you@example.com"
-                            />
-                        </div>
-                    </div>
-
-                    <div>
-                        <button
-                            type="submit"
-                            disabled={isLoading || !email}
-                            className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-70 disabled:cursor-not-allowed transition-all"
-                        >
-                            {isLoading ? 'Sending magic link...' : 'Continue with Email'}
-                        </button>
-                    </div>
-                </form>
+                <div className="space-y-4">
+                    <button
+                        onClick={handleGoogleLogin}
+                        disabled={isLoading}
+                        className="w-full flex items-center justify-center gap-3 py-3 px-4 border border-gray-300 rounded-xl shadow-sm bg-white text-gray-700 hover:bg-gray-50 font-medium transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+                    >
+                        <FcGoogle className="w-6 h-6" />
+                        {isLoading ? 'Connecting to Google...' : 'Continue with Google'}
+                    </button>
+                </div>
+                
+                <p className="text-center text-xs text-gray-400 mt-8">
+                    By continuing, you agree to our Terms of Service and Privacy Policy.
+                </p>
             </div>
         </div>
     )
 }
+
